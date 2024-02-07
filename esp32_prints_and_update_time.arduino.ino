@@ -15,6 +15,9 @@ int hours = 0;
 int minutes = 0;
 int seconds = 0;
 
+unsigned long timeNow = 0 ;
+unsigned long timeLast = 0 ;
+
 void setup() {
   //Initialize serial monitor and OLED display
   Serial.begin(115200);
@@ -54,10 +57,11 @@ void print_line(String text , int column , int row , int text_size){
     display.setCursor(column,row);
     display.println(F(text));
     display.display();
-    delay(2000);
+    
 }
 
 void print_time_now(void){
+  display.clearDisplay();
   print_line(string(days),0,0,2);
   print_line(":",20,0,2);
   print_line(string(hours),30,0,2);
@@ -66,4 +70,24 @@ void print_time_now(void){
   print_line(":",20,0,2);
   print_line(string(seconds),90,0,2);
 
+}
+
+void update_time(){
+  timeNow = millis()/1000;
+  seconds = timeNow-timeLast ;
+
+  if(seconds >= 60){
+    minutes += 1 ;
+    timeLast += 60 ;
+  }
+
+  if(minutes == 60){
+    hours += 1;
+    minutes = 0;
+  }
+
+  if (hours == 24){
+    days +=1 ;
+    hours = 0;
+  }
 }
