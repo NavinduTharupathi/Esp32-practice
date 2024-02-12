@@ -11,6 +11,7 @@
 
 #define BUZZER 5
 #define LED_1 15
+#define PB_CANCEL 34
 
 //declare objects
 Adafruit_SSD1306 display(SCREEN_WIDTH,SCREEN_HEIGHT,&Wire ,OLED_RESET);
@@ -45,6 +46,7 @@ void setup() {
 
   pinMode(BUZZER, OUTPUT);
   pinMode(LED_1, OUTPUT);
+  pinMode(PB_CANCEL, INPUT);
 
   //Initialize serial monitor and OLED display
   Serial.begin(115200);
@@ -135,13 +137,23 @@ void ring_alarm(){
 
     digitalWrite(LED_1, HIGH);
 
+    bool break_happened = false ;
+
     //ring the buzzer
-    for (int i = 0 ; i < n_notes;i++){
-        tone(BUZZER,notes[i]);
-        delay(500);
-        noTone(BUZZER);
-        delay(3);
+    while (break_happened == false  && digitalRead(PB_CANCEL) == HIGH){
+        for (int i = 0 ; i < n_notes;i++){
+          if (digitalRead(PB_CANCEL) == LOW){
+            delay(200);
+            break_happened = true;
+            break;
+          }
+          tone(BUZZER,notes[i]);
+          delay(500);
+          noTone(BUZZER);
+          delay(3);
     }
+    }
+    
 
     digitalWrite(LED_1,LOW);
     display.clearDisplay();
@@ -154,8 +166,10 @@ void update_time_with_check_alarms(void){
     print_time_now();
     if (alarm_enabled == true) {
       for (int i = 0 ; i < n_alarms ;i++){
-        if (alarm_triggered[i]== false && alarm_hours[i]==hours && alarm_minutes[i]==minutes)
+        if (alarm_triggered[i]== false && alarm_hours[i]==hours && alarm_minutes[i]==minutes){
           ring_alarm();
+          alarm_triggered[i] = true;
+        }
       }
     }
 }
