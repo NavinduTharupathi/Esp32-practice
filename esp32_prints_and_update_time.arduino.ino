@@ -37,8 +37,8 @@ void setup() {
   //clear OLED display
   display.clearDisplay();
 
-  // print_line("Welcome to medibox",10,20,2);
-  print_line();
+  print_line("Welcome to medibox",10,20,2);
+  //print_line();
   //display a custom message
 //   display.setTextSize(1);
 //   display.setTextColor(SSD1306_WHITE);
@@ -53,21 +53,22 @@ void loop() {
   // put your main code here, to run repeatedly
   //print_time_now();
 }
-//void print_line(String text , int column , int row , int text_size){
-void print_line(void){  
-    // display.clearDisplay();
-    // display.setTextSize(text_size);
-    // display.setTextColor(SSD1306_WHITE);
-    // display.setCursor(column,row);
-    // display.println(F(text));
-    // display.display();
+void print_line(String text , int column , int row , int text_size){
+//void print_line(void){  
     display.clearDisplay();
-    display.setTextSize(2);
+    display.setTextSize(text_size);
     display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    display.println(F("Welcome to medibox"));
+    display.setCursor(column,row);
+    display.println(text);
     display.display();
-    delay(2000);
+
+    // display.clearDisplay();
+    // display.setTextSize(2);
+    // display.setTextColor(SSD1306_WHITE);
+    // display.setCursor(0,0);
+    // display.println(F("Welcome to medibox"));
+    // display.display();
+    // delay(2000);
     
 }
 
