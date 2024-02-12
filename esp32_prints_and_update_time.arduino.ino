@@ -18,8 +18,8 @@ int hours = 0;
 int minutes = 0;
 int seconds = 0;
 
-// unsigned long timeNow = 0 ;
-// unsigned long timeLast = 0 ;
+unsigned long timeNow = 0 ;
+unsigned long timeLast = 0 ;
 
 void setup() {
   //Initialize serial monitor and OLED display
@@ -38,6 +38,7 @@ void setup() {
   display.clearDisplay();
 
   print_line("Welcome to medibox",10,20,2);
+  display.clearDisplay();
   //print_line();
   //display a custom message
 //   display.setTextSize(1);
@@ -51,6 +52,7 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly
+  update_time();
   print_time_now();
 }
 void print_line(String text , int column , int row , int text_size){
@@ -83,22 +85,22 @@ void print_time_now(void){
 
 }
 
-// void update_time(){
-//   timeNow = millis()/1000;
-//   seconds = timeNow-timeLast ;
+void update_time(){
+  timeNow = millis()/1000; // seconds past after bootup
+  seconds = timeNow-timeLast ;
 
-//   if(seconds >= 60){
-//     minutes += 1 ;
-//     timeLast += 60 ;
-//   }
+  if(seconds >= 60){
+    minutes += 1 ;
+    timeLast += 60 ;
+  }
 
-//   if(minutes == 60){
-//     hours += 1;
-//     minutes = 0;
-//   }
+  if(minutes == 60){
+    hours += 1;
+    minutes = 0;
+  }
 
-//   if (hours == 24){
-//     days +=1 ;
-//     hours = 0;
-//   }
-// }
+  if (hours == 24){
+    days +=1 ;
+    hours = 0;
+  }
+}
