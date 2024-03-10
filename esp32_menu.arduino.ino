@@ -3,6 +3,7 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <DHTesp.h>
+#include <WiFi.h>
 
 //define OLED parameters
 #define SCREEN_WIDTH 128
@@ -17,6 +18,10 @@
 #define PB_UP 33
 #define PB_DOWN 35
 #define DHTPIN 12
+
+#define NTP_SERVER     "pool.ntp.org"
+#define UTC_OFFSET     0
+#define UTC_OFFSET_DST 0
 
 
 //declare objects
@@ -73,7 +78,19 @@ void setup() {
 
   //turn on OLED display
   display.display();
-  delay(2000);
+  delay(500);
+
+  WiFi.begin("Wokwi-GUEST", "", 6);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(250);
+    display.clearDisplay();
+    print_line("Connecting to WIFI", 0 ,0 , 2);
+  }
+
+  display.clearDisplay();
+  print_line("Connected to WIFI", 0, 0, 2);
+
+  configTime(UTC_OFFSET, UTC_OFFSET_DST, NTP_SERVER);
 
   //clear OLED display
   display.clearDisplay();
@@ -88,6 +105,7 @@ void setup() {
 //   display.println(F("Welcome Medibox!"));
 //   display.display();
 //   delay(2000);
+  
 
 }
 
@@ -131,24 +149,45 @@ void print_time_now(void){
 
 }
 
+// void update_time(){
+//   timeNow = millis()/1000; // seconds past after bootup
+//   seconds = timeNow-timeLast ;
+
+//   if(seconds >= 60){
+//     minutes += 1 ;
+//     timeLast += 60 ;
+//   }
+
+//   if(minutes == 60){
+//     hours += 1;
+//     minutes = 0;
+//   }
+
+//   if (hours == 24){
+//     days +=1 ;
+//     hours = 0;
+//   }
+// }
 void update_time(){
-  timeNow = millis()/1000; // seconds past after bootup
-  seconds = timeNow-timeLast ;
+  struct tm timeinfo ;
+  getLocalTime(&timeinfo) ;
 
-  if(seconds >= 60){
-    minutes += 1 ;
-    timeLast += 60 ;
-  }
+  char timeHour[3];
+  strftime(timeHour,3, "%H",&timeinfo);
+  hours = atoi(timeHour);
 
-  if(minutes == 60){
-    hours += 1;
-    minutes = 0;
-  }
+  char timeMinute[3];
+  strftime(timeMinute,3, "%M",&timeinfo);
+  minutes = atoi(timeMinute);
 
-  if (hours == 24){
-    days +=1 ;
-    hours = 0;
-  }
+  char timeSecond[3];
+  strftime(timeSecond,3, "%S",&timeinfo);
+  seconds = atoi(timeSecond);
+
+  char timeDay[3];
+  strftime(timeDay,3, "%D",&timeinfo);
+  days = atoi(timeDay);
+
 }
 
 
@@ -428,7 +467,7 @@ void check_temp(){
     print_line("Temp LOW",0,40,1);
   }
 
-  
+
   if (data.humidity > 40){
     display.clearDisplay();
     print_line("HUMIDITY HIGH",0,50,1);
